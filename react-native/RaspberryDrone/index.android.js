@@ -12,7 +12,9 @@ import {
   View
 } from 'react-native';
 
-import WebSocketWrapper from './app/WebSocketWrapper.js'
+import Button from './app/components/Button.js'
+
+import WebSocketExample from './app/WebSocketExample'
 
 export default class RaspberryDrone extends Component {
   render() {
@@ -28,6 +30,7 @@ export default class RaspberryDrone extends Component {
           Double tap R on your keyboard to reload,{'\n'}
           Shake or press menu button for dev menu
         </Text>
+        <WebSocketExample></WebSocketExample>
       </View>
     );
   }
