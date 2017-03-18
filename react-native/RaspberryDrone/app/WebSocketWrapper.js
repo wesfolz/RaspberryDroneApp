@@ -1,28 +1,47 @@
-
 class WebSocketWrapper {
-	
-	constructor() {
-		this.ws = new WebSocket('ws://192.168.0.103:8080/websocket');
 
-		this.ws.onmessage = (e) => {
+	constructor(url, onMessageCallback) {
+		this.socket = null;
+		this.url = url;// 'ws://192.168.0.102:8080/websocket';
+		this.onMessageCallback = onMessageCallback;
+	}
+
+	connect = () => {
+		this.socket = new WebSocket(this.url);
+
+		this.socket.onmessage = (e) => {
 		  // a message was received
-		  console.log(e.data);
-		}
+  		  console.log(e.data);
+		  this.onMessageCallback(e);
+		};
 
-		this.ws.onerror = (e) => {
+		this.socket.onerror = (e) => {
 		  // an error occurred
 		  console.log(e.message);
-		}
+		};
 
-		this.ws.onclose = (e) => {
+		this.socket.onclose = (e) => {
 		  // connection closed
 		  console.log(e.code, e.reason);
-		}
-	}
+		};
+	};
 
-	send(message)
-	{
-		this.ws.send(message);
-	}
+	send = (message) => {
+		if(this.socket) {
+			console.log('sending');
+			this.socket.send(message);
+		}
+		else
+			console.log('socket null');
+	};
+
+	disconnect = () => {
+    if (!this.socket) {
+      return;
+    }
+    this.socket.close();
+    this.socket = null;
+  };
+
 }
 export default WebSocketWrapper;

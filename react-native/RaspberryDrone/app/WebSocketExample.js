@@ -25,9 +25,9 @@
 
 /* eslint-env browser */
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {
+//const React = require('react');
+import React, { Component } from 'react';
+import {
   PixelRatio,
   StyleSheet,
   Text,
@@ -35,16 +35,17 @@ const {
   TouchableOpacity,
   ScrollView,
   View,
-} = ReactNative;
+} from 'react-native';
 
-const DEFAULT_WS_URL = 'ws://localhost:5555/';
-const DEFAULT_HTTP_URL = 'http://localhost:5556/';
+const DEFAULT_WS_URL = 'ws://192.168.0.102:8080/websocket';
+
 const WS_EVENTS = [
   'close',
   'error',
   'message',
   'open',
 ];
+
 const WS_STATES = [
   /* 0 */ 'CONNECTING',
   /* 1 */ 'OPEN',
@@ -52,8 +53,8 @@ const WS_STATES = [
   /* 3 */ 'CLOSED',
 ];
 
-class Button extends React.Component {
-  render(): React.Element<any> {
+class Button extends Component {
+  render() {
     const label = <Text style={styles.buttonLabel}>{this.props.label}</Text>;
     if (this.props.disabled) {
       return (
@@ -72,8 +73,8 @@ class Button extends React.Component {
   }
 }
 
-class Row extends React.Component {
-  render(): React.Element<any> {
+class Row extends Component {
+  render() {
     return (
       <View style={styles.row}>
         <Text>{this.props.label}</Text>
@@ -98,7 +99,6 @@ function showValue(value) {
 
 type State = {
   url: string;
-  httpUrl: string;
   fetchStatus: ?string;
   socket: ?WebSocket;
   socketState: ?number;
@@ -107,14 +107,13 @@ type State = {
   outgoingMessage: string;
 };
 
-class WebSocketExample extends React.Component<any, any, State> {
+class WebSocketExample extends Component {
 
   static title = 'WebSocket';
   static description = 'WebSocket API';
 
   state: State = {
     url: DEFAULT_WS_URL,
-    httpUrl: DEFAULT_HTTP_URL,
     fetchStatus: null,
     socket: null,
     socketState: null,
@@ -125,6 +124,10 @@ class WebSocketExample extends React.Component<any, any, State> {
 
   _connect = () => {
     const socket = new WebSocket(this.state.url);
+    socket.onMessage = (e) => {
+      console.log('on message');
+      state.lastMessage = e.data;
+    }
     WS_EVENTS.forEach(ev => socket.addEventListener(ev, this._onSocketEvent));
     this.setState({
       socket,
@@ -142,13 +145,14 @@ class WebSocketExample extends React.Component<any, any, State> {
   // Ideally this would be a MessageEvent, but Flow's definition
   // doesn't inherit from Event, so it's 'any' for now.
   // See https://github.com/facebook/flow/issues/1654.
-  _onSocketEvent = (event: any) => {
+  _onSocketEvent = (event) => {
     const state: any = {
       socketState: event.target.readyState,
       lastSocketEvent: event.type,
     };
     if (event.type === 'message') {
-      state.lastMessage = event.data;
+      //state.lastMessage = event.data;
+      var x = 1;
     }
     this.setState(state);
   };
@@ -161,18 +165,6 @@ class WebSocketExample extends React.Component<any, any, State> {
     this.setState({outgoingMessage: ''});
   };
 
-  _sendHttp = () => {
-    this.setState({
-      fetchStatus: 'fetching',
-    });
-    fetch(this.state.httpUrl).then((response) => {
-      if (response.status >= 200 && response.status < 400) {
-        this.setState({
-          fetchStatus: 'OK',
-        });
-      }
-    });
-  };
 
   _sendBinary = () => {
     if (!this.state.socket ||
@@ -189,7 +181,7 @@ class WebSocketExample extends React.Component<any, any, State> {
     this.setState({outgoingMessage: ''});
   };
 
-  render(): React.Element<any> {
+  render() {
     const socketState = WS_STATES[this.state.socketState || -1];
     const canConnect =
       !this.state.socket ||
@@ -197,12 +189,6 @@ class WebSocketExample extends React.Component<any, any, State> {
     const canSend = !!this.state.socket;
     return (
       <ScrollView style={styles.container}>
-        <View style={styles.note}>
-          <Text>To start the WS test server:</Text>
-          <Text style={styles.monospace}>
-            ./Examples/UIExplorer/js/websocket_test_server.js
-          </Text>
-        </View>
         <Row
           label="Current WebSocket state"
           value={showValue(socketState)}
@@ -253,31 +239,6 @@ class WebSocketExample extends React.Component<any, any, State> {
             disabled={!canSend}
           />
         </View>
-        <View style={styles.note}>
-          <Text>To start the HTTP test server:</Text>
-          <Text style={styles.monospace}>
-            ./Examples/UIExplorer/http_test_server.js
-          </Text>
-        </View>
-        <TextInput
-          style={styles.textInput}
-          autoCorrect={false}
-          placeholder="HTTP URL..."
-          onChangeText={(httpUrl) => this.setState({httpUrl})}
-          value={this.state.httpUrl}
-        />
-        <View style={styles.buttonRow}>
-          <Button
-            onPress={this._sendHttp}
-            label="Send HTTP request to set cookie"
-            disabled={this.state.fetchStatus === 'fetching'}
-          />
-        </View>
-        <View style={styles.note}>
-          <Text>
-            {this.state.fetchStatus === 'OK' ? 'Done. Check your WS server console to see if the next WS requests include the cookie (should be "wstest=OK")' : '-'}
-          </Text>
-        </View>
       </ScrollView>
     );
   }
@@ -285,28 +246,6 @@ class WebSocketExample extends React.Component<any, any, State> {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  note: {
-    padding: 8,
-    margin: 4,
-    backgroundColor: 'white',
-  },
-  monospace: {
-    fontFamily: 'courier',
-    fontSize: 11,
-  },
-  row: {
-    height: 40,
-    padding: 4,
-    backgroundColor: 'white',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomWidth: 1 / PixelRatio.get(),
-    borderColor: 'grey',
-  },
   button: {
     margin: 8,
     padding: 8,
@@ -320,10 +259,7 @@ const styles = StyleSheet.create({
   buttonLabel: {
     color: 'white',
   },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
+
   textInput: {
     height: 40,
     backgroundColor: 'white',

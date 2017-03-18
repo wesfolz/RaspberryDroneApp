@@ -9,28 +9,40 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  View
+  View,
+  TextInput
 } from 'react-native';
 
 import Button from './app/components/Button.js'
 
-import WebSocketExample from './app/WebSocketExample'
+//import WebSocketExample from './app/WebSocketExample'
+import WebSocketWrapper from './app/WebSocketWrapper'
+
 
 export default class RaspberryDrone extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {ws: new WebSocketWrapper('ws://192.168.0.102:8080/websocket', this.messageCallback), message: ''};
+  }
+
+  messageCallback(e) {
+    console.log('message callback ' + e.data);
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
-        <WebSocketExample></WebSocketExample>
+        <Button onPress={this.state.ws.connect} label='Connect'></Button>
+        <TextInput 
+          style={styles.textInput}
+          autoCorrect={false}
+          placeholder="Message to send..."
+          onChangeText={(message) => this.setState({message})}
+          value={this.state.message}
+        />
+        <Button onPress={() => this.state.ws.send(this.state.message)} label='Send'></Button>
+        <Button onPress={this.state.ws.disconnect} label='Disconnect'></Button>
       </View>
     );
   }
@@ -43,15 +55,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+    textInput: {
+    flexDirection: 'row',
+    height: 40,
+    width: 200,
+    backgroundColor: 'white',
+    margin: 8,
+    padding: 8,
   },
 });
 
