@@ -4,6 +4,12 @@ import {Text, StyleSheet, View, TouchableOpacity, PixelRatio} from 'react-native
 import WebSocketWrapper from '../WebSocketWrapper.js'
 
 class Button extends Component {
+  
+  constructor(props) {
+    super(props);
+    //this.state = {label: 'Button'};
+  }
+
   render() {
     const label = <Text style={styles.buttonLabel}>{this.props.label}</Text>;
     if (this.props.disabled) {
@@ -40,14 +46,14 @@ const styles = StyleSheet.create({
     margin: 8,
     padding: 8,
     borderRadius: 4,
-    backgroundColor: 'blue',
+    backgroundColor: '#00ffff80',
     alignSelf: 'center',
   },
   disabledButton: {
     opacity: 0.5,
   },
   buttonLabel: {
-    color: 'white',
+    color: 'black',
   },
   buttonRow: {
     flexDirection: 'row',
