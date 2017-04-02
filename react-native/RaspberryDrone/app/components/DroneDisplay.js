@@ -31,28 +31,61 @@ class DroneDisplay extends Component {
       message: '', connectionStatus: 'Disconnected', armingStatus: 'Disarmed'};
   }
 
-  messageCallback(e) {
+  messageCallback = (e) => {
     console.log('message callback ' + e.data);
+
+    switch(e.data) {
+      case 'socketOpened':
+        this.state.ws.send('fcConnect');
+        break;
+      case 'connected':
+        this.setState({connectionStatus: 'Connected'});
+        break;
+      case 'armed':
+        this.setState({armingStatus: 'Armed'});
+        break;
+      case 'disarmed':
+        this.setState({armingStatus: 'Disarmed'});
+        break;
+      case 'streaming':
+        this.webView.reload();
+        break;
+    }
   }
 
   setThrottle = (value) => {
-    this.state.ws.send('test,'+value);
+    this.state.ws.send('fcSetThrottle,'+value);
   }
 
   setYaw = (value) => {
-    this.state.ws.send('test,'+value);
+    this.state.ws.send('fcSetYaw,'+value);
   }
 
   connect = () => {
     this.state.ws.connect();
-    this.setState({connectionStatus: 'Connected'});
+    this.setState({connectionStatus: 'Connecting'});
+  }
 
+  armMotors = () => {
+    if(this.state.armingStatus == 'Disarmed') {
+      this.state.ws.send('fcArm');
+      this.setState({armingStatus: 'Arming'});
+    }
+    else if(this.state.armingStatus == 'Armed') {
+      this.state.ws.send('fcDisarm');
+      this.setState({armingStatus: 'Disarming'});
+    }
   }
 
   setRollPitch = (roll, pitch) => {
-    this.state.ws.send('test,'+roll);
+    this.state.ws.send('fcSetRoll,'+roll);
     //console.log('pitch ' + pitch);
-    this.state.ws.send('test,'+pitch); 
+    this.state.ws.send('fcSetPitch,'+pitch); 
+  }
+
+  startStream = () => {
+    this.state.ws.send('startStream');
+    //this.webView.reload();
   }
 
   render() {
@@ -64,20 +97,16 @@ class DroneDisplay extends Component {
                 yawCallback={(value) => this.setYaw(value)}
             />
           </View>
-          <WebView 
+          <WebView
+              ref={component => this.webView = component} 
               style={styles.absolutePosition}
               source={{uri: 'http://192.168.0.103:5000'}}
           />
           <View style={styles.columnContainer}>
             <Button onPress={() => this.connect()} label={this.state.connectionStatus}/>
-            <Button onPress={() => this.state.ws.send(this.state.message)} label={this.state.armingStatus}/>
-            {/*<TextInput 
-              style={styles.textInput}
-              autoCorrect={false}
-              placeholder="Message to send..."
-              onChangeText={(message) => this.setState({message})}
-              value={this.state.message}
-            />*/}
+            <Button onPress={() => this.armMotors()} label={this.state.armingStatus}/>
+            {/*<Button onPress={() => this.startStream()} label={"Stream"}/>
+            <Button onPress={() => this.webView.reload()} label={"reload"}/>*/}
             <Joystick moveCallback={(roll, pitch) => this.setRollPitch(roll, pitch)}/>
           </View>
         </View>

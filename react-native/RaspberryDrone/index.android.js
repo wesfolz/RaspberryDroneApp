@@ -12,7 +12,6 @@ import {
 import DroneDisplay from './app/components/DroneDisplay.js'
 
 export default class RaspberryDrone extends Component {
-
   render() {
     return (
       <DroneDisplay/>
