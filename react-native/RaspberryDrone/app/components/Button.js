@@ -7,14 +7,13 @@ class Button extends Component {
   
   constructor(props) {
     super(props);
-    //this.state = {label: 'Button'};
   }
 
   render() {
     const label = <Text style={styles.buttonLabel}>{this.props.label}</Text>;
     if (this.props.disabled) {
       return (
-        <View style={[styles.button, styles.disabledButton]}>
+        <View style={[styles.button, styles.disabledButton, {backgroundColor: this.props.color}]}>
           {label}
         </View>
       );
@@ -22,7 +21,7 @@ class Button extends Component {
     return (
       <TouchableOpacity
         onPress={this.props.onPress}
-        style={styles.button}>
+        style={[styles.button, {backgroundColor: this.props.color}]}>
         {label}
       </TouchableOpacity>
     );
@@ -30,23 +29,11 @@ class Button extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  note: {
-    padding: 8,
-    margin: 4,
-    backgroundColor: 'white',
-  },
-  monospace: {
-    fontFamily: 'courier',
-    fontSize: 11,
-  },
   button: {
     margin: 8,
     padding: 8,
     borderRadius: 4,
-    backgroundColor: '#00ffff80',
+    //backgroundColor: '#00ffff80',
     alignSelf: 'center',
   },
   disabledButton: {
@@ -54,16 +41,6 @@ const styles = StyleSheet.create({
   },
   buttonLabel: {
     color: 'black',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  textInput: {
-    height: 40,
-    backgroundColor: 'white',
-    margin: 8,
-    padding: 8,
   },
 });
 

@@ -28,7 +28,7 @@ class DroneDisplay extends Component {
   constructor(props) {
     super(props);
     this.state = {ws: new WebSocketWrapper('ws://192.168.0.103:8080/websocket', this.messageCallback), 
-      message: '', connectionStatus: 'Disconnected', armingStatus: 'Disarmed'};
+      message: '', connectionStatus: 'Disconnected', armingStatus: 'Disarmed', connectColor: '#ff0000', armColor: '#ff0000'};
   }
 
   messageCallback = (e) => {
@@ -39,13 +39,13 @@ class DroneDisplay extends Component {
         this.state.ws.send('fcConnect');
         break;
       case 'connected':
-        this.setState({connectionStatus: 'Connected'});
+        this.setState({connectionStatus: 'Connected', connectColor: '#00ffff20'});
         break;
       case 'armed':
-        this.setState({armingStatus: 'Armed'});
+        this.setState({armingStatus: 'Armed', armColor: '#00ffff20'});
         break;
       case 'disarmed':
-        this.setState({armingStatus: 'Disarmed'});
+        this.setState({armingStatus: 'Disarmed', armColor: '#ff0000'});
         break;
       case 'streaming':
         this.webView.reload();
@@ -62,18 +62,23 @@ class DroneDisplay extends Component {
   }
 
   connect = () => {
-    this.state.ws.connect();
-    this.setState({connectionStatus: 'Connecting'});
+    if(this.state.ws.socket == null) {
+      this.state.ws.connect();
+      this.setState({connectionStatus: 'Connecting...', connectColor: '#ffff0080'});
+    }
+    //else {
+    //  this.state.ws.send('shutdownPi');
+    //}
   }
 
   armMotors = () => {
     if(this.state.armingStatus == 'Disarmed') {
       this.state.ws.send('fcArm');
-      this.setState({armingStatus: 'Arming'});
+      this.setState({armingStatus: 'Arming...', armColor: '#ffff0080'});
     }
     else if(this.state.armingStatus == 'Armed') {
       this.state.ws.send('fcDisarm');
-      this.setState({armingStatus: 'Disarming'});
+      this.setState({armingStatus: 'Disarming...', armColor: '#ffff0080'});
     }
   }
 
@@ -103,8 +108,8 @@ class DroneDisplay extends Component {
               source={{uri: 'http://192.168.0.103:5000'}}
           />
           <View style={styles.columnContainer}>
-            <Button onPress={() => this.connect()} label={this.state.connectionStatus}/>
-            <Button onPress={() => this.armMotors()} label={this.state.armingStatus}/>
+            <Button onPress={() => this.connect()} label={this.state.connectionStatus} color={this.state.connectColor}/>
+            <Button onPress={() => this.armMotors()} label={this.state.armingStatus} color={this.state.armColor}/>
             {/*<Button onPress={() => this.startStream()} label={"Stream"}/>
             <Button onPress={() => this.webView.reload()} label={"reload"}/>*/}
             <Joystick moveCallback={(roll, pitch) => this.setRollPitch(roll, pitch)}/>
