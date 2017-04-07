@@ -27,7 +27,7 @@ class DroneDisplay extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {ws: new WebSocketWrapper('ws://192.168.0.103:8080/websocket', this.messageCallback), 
+    this.state = {ws: new WebSocketWrapper('ws://172.24.1.1:8080/websocket', this.messageCallback), 
       message: '', connectionStatus: 'Disconnected', armingStatus: 'Disarmed', connectColor: '#ff0000', armColor: '#ff0000'};
   }
 
@@ -105,7 +105,7 @@ class DroneDisplay extends Component {
           <WebView
               ref={component => this.webView = component} 
               style={styles.absolutePosition}
-              source={{uri: 'http://192.168.0.103:5000'}}
+              source={{uri: 'http://172.24.1.1:5000'}}
           />
           <View style={styles.columnContainer}>
             <Button onPress={() => this.connect()} label={this.state.connectionStatus} color={this.state.connectColor}/>
