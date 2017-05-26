@@ -12,7 +12,8 @@ import {
   View,
   TextInput,
   WebView,
-  Dimensions
+  Dimensions,
+  Alert
 } from 'react-native';
 
 import Button from './Button.js'
@@ -28,7 +29,7 @@ class DroneDisplay extends Component {
   constructor(props) {
     super(props);
     this.state = {ws: new WebSocketWrapper('ws://172.24.1.1:8080/websocket', this.messageCallback), 
-      message: '', connectionStatus: 'Disconnected', armingStatus: 'Disarmed', connectColor: '#ff0000', armColor: '#ff0000'};
+      message: '', connectionStatus: 'Connect', armingStatus: 'Arm', connectColor: '#ff0000', armColor: '#ff0000'};
   }
 
   messageCallback = (e) => {
@@ -36,16 +37,17 @@ class DroneDisplay extends Component {
 
     switch(e.data) {
       case 'socketOpened':
+        this.setState({connectionStatus: 'Connecting fc...', connectColor: '#00ffff20'}); 
         this.state.ws.send('fcConnect');
         break;
       case 'connected':
-        this.setState({connectionStatus: 'Connected', connectColor: '#00ffff20'});
+        this.setState({connectionStatus: 'Shutdown', connectColor: '#00ffff20'});
         break;
       case 'armed':
-        this.setState({armingStatus: 'Armed', armColor: '#00ffff20'});
+        this.setState({armingStatus: 'Disarm', armColor: '#00ffff20'});
         break;
       case 'disarmed':
-        this.setState({armingStatus: 'Disarmed', armColor: '#ff0000'});
+        this.setState({armingStatus: 'Arm', armColor: '#ff0000'});
         break;
       case 'streaming':
         this.webView.reload();
@@ -66,17 +68,17 @@ class DroneDisplay extends Component {
       this.state.ws.connect();
       this.setState({connectionStatus: 'Connecting...', connectColor: '#ffff0080'});
     }
-    //else {
-    //  this.state.ws.send('shutdownPi');
-    //}
+    else {
+      this.shutdownPi();
+    }
   }
 
   armMotors = () => {
-    if(this.state.armingStatus == 'Disarmed') {
+    if(this.state.armingStatus == 'Arm') {
       this.state.ws.send('fcArm');
       this.setState({armingStatus: 'Arming...', armColor: '#ffff0080'});
     }
-    else if(this.state.armingStatus == 'Armed') {
+    else if(this.state.armingStatus == 'Disarm') {
       this.state.ws.send('fcDisarm');
       this.setState({armingStatus: 'Disarming...', armColor: '#ffff0080'});
     }
@@ -91,6 +93,17 @@ class DroneDisplay extends Component {
   startStream = () => {
     this.state.ws.send('startStream');
     //this.webView.reload();
+  }
+
+  shutdownPi = () => {
+    Alert.alert(
+      'Shutdown',
+      'Are you sure you want to shutdown the RPi?',
+      [
+        {text: 'OK', onPress: () => this.state.ws.send('shutdownPi')},
+        {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+      ],
+      { cancelable: false })
   }
 
   render() {
