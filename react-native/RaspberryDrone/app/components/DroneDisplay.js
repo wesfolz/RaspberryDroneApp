@@ -32,14 +32,18 @@ class DroneDisplay extends Component {
       message: '', connectionStatus: 'Connect', armingStatus: 'Arm', connectColor: '#ff0000', armColor: '#ff0000'};
   }
 
-  messageCallback = (e) => {
-    console.log('message callback ' + e.data);
+  messageCallback = (data) => {
+    console.log('message callback ' + data);
 
-    switch(e.data) {
+    switch(data) {
       case 'socketOpened':
         this.setState({connectionStatus: 'Connecting fc...', connectColor: '#00ffff20'}); 
         this.state.ws.send('fcConnect');
         break;
+      case 'socketClosed':
+      	alert('Websocket connection closed.');
+      	this.setState({connectionStatus: 'Connect', connectColor: '#ff0000'}); 
+      	break;
       case 'connected':
         this.setState({connectionStatus: 'Shutdown', connectColor: '#00ffff20'});
         break;
@@ -64,7 +68,7 @@ class DroneDisplay extends Component {
   }
 
   connect = () => {
-    if(this.state.ws.socket == null) {
+    if(this.state.ws.socket == null || this.state.connectionStatus == 'Connect') {
       this.state.ws.connect();
       this.setState({connectionStatus: 'Connecting...', connectColor: '#ffff0080'});
     }

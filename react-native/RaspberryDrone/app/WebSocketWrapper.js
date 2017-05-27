@@ -12,7 +12,7 @@ class WebSocketWrapper {
 		this.socket.onmessage = (e) => {
 		  // a message was received
   		  console.log(e.data);
-		  this.onMessageCallback(e);
+		  this.onMessageCallback(e.data);
 		};
 
 		this.socket.onerror = (e) => {
@@ -22,6 +22,7 @@ class WebSocketWrapper {
 
 		this.socket.onclose = (e) => {
 		  // connection closed
+		  this.onMessageCallback('socketClosed');
 		  console.log(e.code, e.reason);
 		};
 	};
