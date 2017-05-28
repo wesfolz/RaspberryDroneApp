@@ -122,11 +122,14 @@ class DroneDisplay extends Component {
           <WebView
               ref={component => this.webView = component} 
               style={styles.absolutePosition}
-              source={{uri: 'http://172.24.1.1:5000'}}
+              /*source={{uri: 'https://google.com'}}*/
+              source={{uri: 'https://172.24.1.1:5000'}}
           />
           <View style={styles.columnContainer}>
-            <Button onPress={() => this.connect()} label={this.state.connectionStatus} color={this.state.connectColor}/>
-            <Button onPress={() => this.armMotors()} label={this.state.armingStatus} color={this.state.armColor}/>
+          	<View style={styles.buttonContainer}>
+            	<Button onPress={() => this.connect()} label={this.state.connectionStatus} color={this.state.connectColor}/>
+            	<Button onPress={() => this.armMotors()} label={this.state.armingStatus} color={this.state.armColor}/>
+            </View>
             {/*<Button onPress={() => this.startStream()} label={"Stream"}/>
             <Button onPress={() => this.webView.reload()} label={"reload"}/>*/}
             <Joystick moveCallback={(roll, pitch) => this.setRollPitch(roll, pitch)}/>
@@ -143,21 +146,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     backgroundColor: 'transparent',
+    marginLeft: '5%',
+    marginBottom: '1%',
+    zIndex: 1,
   },
   columnContainer: {
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'space-around',
-    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    margin: '1%',
+  },
+  buttonContainer: {
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
   },
   absolutePosition: {
     flex: 1,
     position: 'absolute',
     bottom: 0,
-    left: -410,
+    left: -window.width*0.61,
     height: window.height,
     width: window.width,
-    zIndex: -1,
   },
 });
 

@@ -16,8 +16,8 @@ class Joystick extends Component {
   constructor(props) {
     super(props);
     this._panResponder = {};
-    this._initialLeft = 25;
-    this._initialTop = 200;
+    this._initialLeft = CIRCLE_SIZE/2;
+    this._initialTop = CIRCLE_SIZE/2;
     this._previousLeft = 0;
     this._previousTop = 0;
     this._circleStyles = {};
@@ -41,8 +41,8 @@ class Joystick extends Component {
     this._previousTop = this._initialTop;
     this._circleStyles = {
       style: {
-        left: this._previousLeft,
-        top: this._previousTop,
+        //left: this._previousLeft,
+        //top: this._previousTop,
         backgroundColor: '#00ffff20',
       }
     };
@@ -136,21 +136,18 @@ var styles = StyleSheet.create({
     borderRadius: OUTER_CIRCLE_SIZE / 2,
     backgroundColor: '#00ffff20',
     borderColor: '#000000ff',
-    position: 'absolute',
-    left: 0,
-    top: 175,
   },
   circle: {
     width: CIRCLE_SIZE,
     height: CIRCLE_SIZE,
     borderRadius: CIRCLE_SIZE / 2,
     position: 'absolute',
-    //left: 0,
-    //top: 0,
+    left: CIRCLE_SIZE/2,
+    top: CIRCLE_SIZE/2,
   },
   container: {
-    flex: 1,
-    alignItems: 'flex-end',
+    marginRight: '50%',
+    marginBottom: '30%'
   },
 });
 
