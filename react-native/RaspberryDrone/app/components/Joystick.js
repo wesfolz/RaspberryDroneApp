@@ -43,7 +43,7 @@ class Joystick extends Component {
       style: {
         //left: this._previousLeft,
         //top: this._previousTop,
-        backgroundColor: '#00ffff20',
+        backgroundColor: '#00ffff40',
       }
     };
   }
@@ -69,12 +69,12 @@ class Joystick extends Component {
   }
 
   _highlight = () => {
-    this._circleStyles.style.backgroundColor = '#00ffff80';
+    this._circleStyles.style.backgroundColor = '#00ffffff';
     this._updateNativeStyles();
   };
 
   _unHighlight = () => {
-    this._circleStyles.style.backgroundColor = '#00ffff40';
+    this._circleStyles.style.backgroundColor = '#00ffff80';
     this._updateNativeStyles();
   };
 
@@ -134,7 +134,7 @@ var styles = StyleSheet.create({
     width: OUTER_CIRCLE_SIZE,
     height: OUTER_CIRCLE_SIZE,
     borderRadius: OUTER_CIRCLE_SIZE / 2,
-    backgroundColor: '#00ffff20',
+    backgroundColor: '#00ffff40',
     borderColor: '#000000ff',
   },
   circle: {
